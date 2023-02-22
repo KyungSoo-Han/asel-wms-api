@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.biztax.wms.mapper.buy.BuyOrderMapper">
+
+    <update id="saveBuyOrderMst" parameterType="kr.co.biztax.wms.dto.buy.BuyOrderDto"  >
+
+        MERGE INTO BUY_ORDER AS a
+        USING (
+        <foreach collection="list" item = "d" index="index" open="" close=""  separator="UNION">
+            SELECT #{d.biz_cd} as biz_cd,
+            #{slip_no} as slip_no,
+            #{d.slip_dt} as slip_dt,
+            #{d.center_cd} as center_cd,
+            #{d.cust_cd} as cust_cd,
+            #{d.custProv_cd} as custProv_cd,
+            #{d.remark} as remark,
+            #{d.user_id} as user_id,
+            #{d.delivReq_dt} as delivReq_dt,
+            #{d.buy_gbn} as buy_gbn
+        </foreach>
+        ) b
+        ON (a.slip_no = #{slip_no})
+        WHEN MATCHED THEN
+        UPDATE SET
+        a.cust_cd = b.cust_cd, a.custProv_cd = b.custProv_cd, a.remark = b.remark,
+        a.up_id = b.user_id, a.up_dt = getdate(), a.delivReq_dt = b.delivReq_dt;
+
+    </update>
+    <insert id="saveBuyOrder" parameterType="map"  >
+
+        <selectKey resultType="int" keyProperty="seq_no" order="BEFORE">
+            SELECT isnull(Max(seq_no),0) + 1 as seq_no
+            FROM buy_order
+            WHERE biz_cd = #{biz_cd}
+                and slip_no = #{slip_no}
+        </selectKey>
+        <!--
+        insert into buy_order
+        (
+            biz_cd  , slip_no   , seq_no , slip_dt, center_cd, cust_cd, custProv_cd, remark,
+            item_cd, item_qty, price_amt, supply_amt, item_remark,	in_id,	in_dt,
+            delivReq_dt, buy_gbn, provLot_no, make_dt, exp_dt
+        )
+        <foreach collection="list" item = "d" index="index" separator=" , ">
+        values
+            (
+            #{d.biz_cd}, #{slip_no}, #{seq_no} + #{index}, #{d.slip_dt}, #{d.center_cd}, #{d.cust_cd}, #{d.custProv_cd}, #{d.remark},
+             #{d.item_cd}, #{d.item_qty}, #{d.price_amt}, #{d.supply_amt}, #{item_remark}, #{d.user_id},getdate(),
+             #{d.delivReq_dt}, #{d.buy_gbn}, #{d.provLot_no}, #{d.make_dt}, #{d.exp_dt}
+            )
+        </foreach>-->
+
+
+            MERGE INTO BUY_ORDER AS a
+            USING (
+                    <foreach collection="list" item = "d" index="index" open="" close=""  separator="UNION">
+                        SELECT #{d.biz_cd} as biz_cd,
+                               #{slip_no} as slip_no,
+                                IIF(#{d.seq_no} = 0, 1 + #{index}, #{d.seq_no})  as seq_no ,
+                               #{d.slip_dt} as slip_dt,
+                               #{d.center_cd} as center_cd,
+                               #{d.cust_cd} as cust_cd,
+                               #{d.custProv_cd} as custProv_cd,
+                               #{d.remark} as remark,
+                               #{d.item_cd} as item_cd,
+                               #{d.item_qty} as item_qty,
+                               #{d.price_amt} as price_amt,
+                               #{d.supply_amt} as supply_amt,
+                               #{d.item_remark} as item_remark,
+                               #{d.user_id} as user_id,
+                               #{d.delivReq_dt} as delivReq_dt,
+                               #{d.buy_gbn} as buy_gbn,
+                               #{d.provLot_no} as provLot_no,
+                               #{d.make_dt} as make_dt,
+                               #{d.exp_dt} as exp_dt
+                   </foreach>
+                   ) b
+                ON (a.slip_no = #{slip_no} and a.seq_no = b.seq_no)
+            WHEN MATCHED THEN
+                UPDATE SET
+                    a.cust_cd = b.cust_cd, a.custProv_cd = b.custProv_cd, a.remark = b.remark,
+                    a.item_cd = b.item_cd, a.item_qty = b.item_qty, a.price_amt = b.price_amt, a.supply_amt = b.supply_amt,
+                    a.up_id = b.user_id, a.up_dt = getdate(), a.delivReq_dt = b.delivReq_dt, a.provLot_no = b.provLot_no,
+                    a.make_dt = b.make_dt, a.exp_dt = b.exp_dt, a.item_remark = b.item_remark
+            WHEN NOT MATCHED THEN
+                insert
+                (
+                    biz_cd  , slip_no   , seq_no , slip_dt, center_cd, cust_cd, custProv_cd, remark,
+                    item_cd, item_qty, price_amt, supply_amt, item_remark,	in_id,	in_dt,
+                    delivReq_dt, buy_gbn, provLot_no, make_dt, exp_dt
+                )
+                values
+                (
+                    b.biz_cd, b.slip_no, b.seq_no, b.slip_dt, b.center_cd, b.cust_cd, b.custProv_cd, b.remark,
+                    b.item_cd, b.item_qty, b.price_amt, b.supply_amt, b.item_remark, b.user_id,getdate(),
+                    b.delivReq_dt, b.buy_gbn, b.provLot_no, b.make_dt, b.exp_dt
+                )
+            ;
+    </insert>
+
+    <delete id="deleteBuyOrder" parameterType="String">
+        DElete from BUY_ORDER where biz_cd = #{biz_cd} and slip_no = #{slip_no}
+    </delete>
+
+    <delete id="deleteBuyOrderItem" parameterType="map">
+        DElete from BUY_ORDER
+        where biz_cd = #{biz_cd}
+        And slip_no + convert(varchar,seq_no) in
+        <foreach collection="list" item = "d" index="index" open="(" close=")"  separator=",">
+         #{d.slip_no} + convert(varchar,#{d.seq_no})
+        </foreach>
+    </delete>
+
+    <select id="findBuyOrder" resultType="kr.co.biztax.wms.dto.buy.BuyOrderDto" parameterType="String">
+        SELECT a.biz_cd  , a.slip_no   , a.seq_no , a.slip_dt, a.center_cd, a.cust_cd, c.cust_nm, a.custProv_cd, d.custProv_nm, a.remark,
+               a.item_cd, b.item_nm, a.item_qty, a.price_amt, a.supply_amt, a.item_remark,	a.in_id,	a.in_dt,
+               a.delivReq_dt, a.buy_gbn, a.provLot_no, a.make_dt, a.exp_dt
+        FROM buy_order as a
+                 INNER JOIN MST_ITEM b on a.biz_cd = b.biz_cd and a.cust_cd = b.cust_cd and a.item_cd = b.item_cd
+                 INNER JOIN MST_CUST c on a.biz_cd = c.biz_cd and a.cust_cd = c.cust_cd
+                 LEFT JOIN MST_CUSTPROV d on a.biz_cd = d.biz_cd and a.cust_cd = d.cust_cd and a.custProv_cd = d.custProv_cd
+        WHERE a.biz_cd = #{biz_cd}
+          and a.slip_no = #{slip_no}
+    </select>
+
+    <select id="findBuyOrderList" resultType="kr.co.biztax.wms.dto.buy.BuyOrderDto" parameterType="kr.co.biztax.wms.dto.buy.SearchBuyOrderDto">
+        SELECT a.biz_cd  , a.slip_no   , a.seq_no , a.slip_dt, a.center_cd, a.cust_cd, c.cust_nm, a.custProv_cd, d.custProv_nm, a.remark,
+               a.item_cd, b.item_nm, a.item_qty, a.price_amt, a.supply_amt, a.item_remark,	a.in_id,	a.in_dt,
+               a.delivReq_dt, a.buy_gbn, a.provLot_no, a.make_dt, a.exp_dt
+        FROM buy_order as a
+                 INNER JOIN MST_ITEM b on a.biz_cd = b.biz_cd and a.cust_cd = b.cust_cd and a.item_cd = b.item_cd
+                 INNER JOIN MST_CUST c on a.biz_cd = c.biz_cd and a.cust_cd = c.cust_cd
+                 LEFT JOIN MST_CUSTPROV d on a.biz_cd = d.biz_cd and a.cust_cd = d.cust_cd and a.custProv_cd = d.custProv_cd
+        WHERE a.biz_cd = #{biz_cd}
+          and (isnull(#{slip_no},'') = '' OR a.slip_no = #{slip_no})
+          AND A.slip_dt BETWEEN #{fDate} AND #{tDate}
+          AND (isnull(#{cust_cd},'') = '' OR A.cust_cd = #{cust_cd})
+          AND (isnull(#{custProv_cd},'') = '' OR A.custProv_cd = #{custProv_cd})
+        ORDER BY a.slip_no, a.seq_no
+    </select>
+</mapper>
+
+<!--
+Created by IntelliJ IDEA.
+User: hanks
+Date: 2023-01-25
+Time: 오후 12:08
+-->
+
+    

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.biztax.wms.mapper.center.CenterMapper">
+
+
+    <select id="searchCenter"  resultType="kr.co.biztax.wms.dto.center.CenterDto" statementType="CALLABLE">
+
+        <![CDATA[{
+            CALL DBO.MST_CENTER_LIST(
+                        #{gbn}, #{biz_cd}, #{center_cd}
+                    )
+        }]]>
+    </select>
+
+    <select id="searchDetailCenter"  resultType="kr.co.biztax.wms.dto.center.CenterDetailDto" statementType="CALLABLE">
+
+        <![CDATA[{
+        CALL MST_CENTER_LIST(
+                #{gbn}, #{biz_cd}, #{center_cd}
+            )
+        }]]>
+    </select>
+    <insert id="createCenter" parameterType="list"  >
+        insert into mst_center
+        (
+            in_id, center_cd, center_nm, biz_cd, zip_no, zip_addr, dtl_addr, remark
+        )
+        values
+        <foreach collection="list" item = "item" separator=" , ">
+        (
+            #{item.user_id}, #{item.center_cd}, #{item.center_nm}, #{item.biz_cd},
+            #{item.zip_no}, #{item.zip_addr}, #{item.dtl_addr}, #{item.remark}
+        )
+        </foreach>
+    </insert>
+    <delete id="deleteCenter" parameterType="list">
+        delete from mst_center
+        where
+        center_cd in
+        <foreach collection="list" item = "item" open="(" close=")" separator="," >
+             #{item.center_cd}
+        </foreach>
+    </delete>
+<!--    <select id="createCenter" statementType="CALLABLE"  parameterType="list"  resultType="kr.co.biztax.wms.dto.common.ResultDto">
+
+        <foreach collection="list" item = "item" >
+            CALL MST_CENTER_IUD
+            (
+                #{item.gbn}, #{item.user_id}, #{item.center_cd}, #{item.center_nm}, #{item.biz_cd},
+                 #{item.zip_no}, #{item.zip_addr}, #{item.dtl_addr}, #{item.remark}
+            )
+
+        </foreach>
+    </select>-->
+</mapper>
+
+    

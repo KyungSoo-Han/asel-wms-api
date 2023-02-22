@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.biztax.wms.mapper.common.SlipNoMapper">
+
+    <select id="getSlipNo"  resultType="String" statementType="CALLABLE">
+        <![CDATA[{
+        CALL COM_GetSlipNo(
+                #{biz_cd}, #{slip_gbn}, #{slip_dt}, #{pre_char}, #{sepa_char}, #{fill_char}, #{seq_len}
+            )
+        }]]>
+    </select>
+
+</mapper>
+
+        <!--
+Created by IntelliJ IDEA.
+User: hanks
+Date: 2023-01-26
+Time: 오후 2:16
+-->
+
+    
