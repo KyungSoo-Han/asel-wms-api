@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.co.biztax.wms.mapper.buy.BuyOrderMapper">
+<mapper namespace="kr.co.biztax.wms.mapper.inbound.InboundMapper">
 
-    <update id="saveBuyOrderMst" parameterType="kr.co.biztax.wms.dto.buy.BuyOrderDto"  >
+    <update id="saveInboundMst" parameterType="kr.co.biztax.wms.dto.inbound.InboundDto"  >
 
         MERGE INTO BUY_ORDER AS a
         USING (
@@ -26,7 +26,7 @@
         a.up_id = b.user_id, a.up_dt = getdate(), a.delivReq_dt = b.delivReq_dt;
 
     </update>
-    <insert id="saveBuyOrder" parameterType="map"  >
+    <insert id="saveInbound" parameterType="map"  >
 
         <selectKey resultType="int" keyProperty="seq_no" order="BEFORE">
             SELECT isnull(Max(seq_no),0) + 1 as seq_no
@@ -98,11 +98,11 @@
             ;
     </insert>
 
-    <delete id="deleteBuyOrder" parameterType="String">
+    <delete id="deleteInbound" parameterType="String">
         DElete from BUY_ORDER where biz_cd = #{biz_cd} and slip_no = #{slip_no}
     </delete>
 
-    <delete id="deleteBuyOrderItem" parameterType="map">
+    <delete id="deleteInboundItem" parameterType="map">
         DElete from BUY_ORDER
         where biz_cd = #{biz_cd}
         And slip_no + convert(varchar,seq_no) in
@@ -111,7 +111,7 @@
         </foreach>
     </delete>
 
-    <select id="findBuyOrder" resultType="kr.co.biztax.wms.dto.buy.BuyOrderDto" parameterType="String">
+    <select id="findInbound" resultType="kr.co.biztax.wms.dto.inbound.InboundDto" parameterType="String">
         SELECT a.biz_cd  , a.slip_no   , a.seq_no , a.slip_dt, a.center_cd, a.cust_cd, c.cust_nm, a.custProv_cd, d.custProv_nm, a.remark,
                a.item_cd, b.item_nm, a.item_qty, a.price_amt, a.supply_amt, a.item_remark,	a.in_id,	a.in_dt,
                a.delivReq_dt, a.buy_gbn, a.provLot_no, a.make_dt, a.exp_dt
@@ -123,7 +123,7 @@
           and a.slip_no = #{slip_no}
     </select>
 
-    <select id="findBuyOrderList" resultType="kr.co.biztax.wms.dto.buy.BuyOrderDto" parameterType="kr.co.biztax.wms.dto.buy.SearchBuyOrderDto">
+    <select id="findInboundList" resultType="kr.co.biztax.wms.dto.inbound.InboundDto" parameterType="kr.co.biztax.wms.dto.inbound.SearchInboundDto">
         SELECT a.biz_cd  , a.slip_no   , a.seq_no , a.slip_dt, a.center_cd, a.cust_cd, c.cust_nm, a.custProv_cd, d.custProv_nm, a.remark,
                a.item_cd, b.item_nm, a.item_qty, a.price_amt, a.supply_amt, a.item_remark,	a.in_id,	a.in_dt,
                a.delivReq_dt, a.buy_gbn, a.provLot_no, a.make_dt, a.exp_dt

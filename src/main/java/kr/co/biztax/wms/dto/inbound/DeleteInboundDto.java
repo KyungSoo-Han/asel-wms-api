@@ -1,9 +1,9 @@
-package kr.co.biztax.wms.dto.buy;
+package kr.co.biztax.wms.dto.inbound;
 
 import lombok.Data;
 
 @Data
-public class DeleteBuyOrderDto {
+public class DeleteInboundDto {
     private String biz_cd;
     private String slip_no;
     private int seq_no;

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CenterDto {
 
-    private String center_cd;
-    private String center_nm;
+    private String centerCd;
+    private String centerNm;
 
 }

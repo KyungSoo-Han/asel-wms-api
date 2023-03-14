@@ -9,12 +9,9 @@ import lombok.Data;
 @Builder
 public class SlipNoDto {
 
-    private String biz_cd;
-    private String slip_gbn;
-    private String slip_dt;
-    private String pre_char;
-    private String sepa_char;
-    private String fill_char;
-    private int seq_len;
+    private String bizCd;
+    private String slipGbn;
+    private String preChar;
+    private String slipDt;
 
 }

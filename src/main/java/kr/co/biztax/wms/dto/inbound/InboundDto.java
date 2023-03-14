@@ -1,9 +1,9 @@
-package kr.co.biztax.wms.dto.buy;
+package kr.co.biztax.wms.dto.inbound;
 
 import lombok.Data;
 
 @Data
-public class BuyOrderDto {
+public class InboundDto {
     private String gbn;
     private String biz_cd;
     private String center_cd;

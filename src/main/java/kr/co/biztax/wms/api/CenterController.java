@@ -24,22 +24,20 @@ public class CenterController {
     private final CenterService centerService;
 
     @GetMapping
-    public ResponseEntity<ResponseDto> searchCenter(@RequestParam String gbn,
+    public ResponseDto<List<CenterDto>> searchCenter(@RequestParam String gbn,
                                                     @RequestParam String biz_cd,
                                                     @RequestParam(required = false, defaultValue = "")String center_cd){
 
         List<CenterDto> centerDtos = centerService.searchCenter(gbn, biz_cd, center_cd);
-        ResponseDto<Object> responseDto = ResponseDto.builder().data(centerDtos).message("").build();
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return ResponseDto.SuccessResponse(centerDtos,HttpStatus.OK);
     }
     @GetMapping("/detail")
-    public ResponseEntity<ResponseDto> searchDetailCenter(@RequestParam String gbn,
+    public ResponseDto<List<CenterDetailDto>> searchDetailCenter(@RequestParam String gbn,
                                                     @RequestParam String biz_cd,
                                                     @RequestParam(required = false, defaultValue = "")String center_cd){
 
         List<CenterDetailDto> centerDtos = centerService.searchDetailCenter(gbn, biz_cd, center_cd);
-        ResponseDto<Object> responseDto = ResponseDto.builder().data(centerDtos).message("").build();
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return ResponseDto.SuccessResponse(centerDtos,HttpStatus.OK);
     }
 
     @GetMapping("/{gbn}/{biz_cd}/{center_cd}")
@@ -69,21 +67,19 @@ public class CenterController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDto> createCenter(@RequestBody List<CreateCenterDto> request) throws Exception {
+    public ResponseDto<String>  createCenter(@RequestBody List<CreateCenterDto> request) throws Exception {
         System.out.println("request = " + request);
         centerService.createCenter(request);
-        ResponseDto<Object> responseDto = ResponseDto.builder().data("OK").message("").build();
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK ) ;
+        return ResponseDto.SuccessResponse("OK",HttpStatus.OK);
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseDto> deleteCenter(@RequestBody List<CenterDto> request) throws Exception {
+    public ResponseDto<String> deleteCenter(@RequestBody List<CenterDto> request) throws Exception {
         System.out.println("request = " + request);
         centerService.deleteCenter(request);
-        ResponseDto<Object> responseDto = ResponseDto.builder().data("OK").message("").build();
 
-        return new ResponseEntity<>(responseDto, HttpStatus.OK ) ;
+        return ResponseDto.SuccessResponse("OK",HttpStatus.OK);
     }
 
     @GetMapping("/hello")

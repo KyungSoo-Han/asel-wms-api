@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ResultDto {
-    private String result_cd;
-    private String result_msg;
+    private String resultCd;
+    private String resultMsg;
 
 }

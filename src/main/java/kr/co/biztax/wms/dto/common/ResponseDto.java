@@ -1,19 +1,27 @@
 package kr.co.biztax.wms.dto.common;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ResponseDto<T> {
 
-    private final boolean success = true;
-    private final String error = null;
+    private HttpStatus status = HttpStatus.OK;
     private String message;
     private T data;
 
+    public static <T> ResponseDto<T> SuccessResponse(T data, HttpStatus status) {
+        return new ResponseDto<>(data, status );
+    }
+
     @Builder
-    public ResponseDto(String message, T data) {
-        this.message = message;
+    public ResponseDto(T data, HttpStatus status ) {
+        this.status = status;
         this.data = data;
     }
+
 }

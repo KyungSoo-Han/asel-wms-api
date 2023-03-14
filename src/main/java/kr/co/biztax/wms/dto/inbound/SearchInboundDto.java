@@ -1,4 +1,4 @@
-package kr.co.biztax.wms.dto.buy;
+package kr.co.biztax.wms.dto.inbound;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchBuyOrderDto {
+public class SearchInboundDto {
     private String biz_cd;
     private String slip_no;
     private String cust_cd;
